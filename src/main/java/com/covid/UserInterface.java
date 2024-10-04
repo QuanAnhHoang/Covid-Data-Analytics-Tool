@@ -7,6 +7,9 @@ public class UserInterface {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
     private Scanner scanner;
     private List<Data> allData;
+    private List<Data> selectedData;
+    private Summary summary;
+    private Display display;
 
     public UserInterface(List<Data> allData) {
         this.scanner = new Scanner(System.in);
@@ -57,16 +60,21 @@ public class UserInterface {
         DateRange dateRange = new DateRange(startDate, endDate);
 
         // Filter data based on location and date range
-        List<Data> filteredData = allData.stream()
+        selectedData = allData.stream()
                 .filter(d -> (d.getLocation().equalsIgnoreCase(location) || d.getContinent().equalsIgnoreCase(location))
                         && !d.getDate().isBefore(dateRange.getStartDate())
                         && !d.getDate().isAfter(dateRange.getEndDate()))
                 .toList();
 
-        System.out.println("Data selected: " + filteredData.size() + " records");
+        System.out.println("Data selected: " + selectedData.size() + " records");
     }
 
     private void chooseSummaryOptions() {
+        if (selectedData == null || selectedData.isEmpty()) {
+            System.out.println("Please select data first.");
+            return;
+        }
+
         System.out.println("Choose grouping method:");
         System.out.println("1. No grouping");
         System.out.println("2. Number of groups");
@@ -127,18 +135,26 @@ public class UserInterface {
 
         Summary.ResultType resultType = (resultTypeChoice == 2) ? Summary.ResultType.UP_TO : Summary.ResultType.NEW_TOTAL;
 
-        System.out.println("Summary options selected.");
+        // Create Summary object with chosen options
+        summary = new Summary(selectedData, groupingStrategy, metric, resultType);
+        System.out.println("Summary options selected and applied.");
     }
 
     private void displayResults() {
+        if (summary == null) {
+            System.out.println("Please select data and choose summary options first.");
+            return;
+        }
+
         System.out.println("Choose display method:");
         System.out.println("1. Tabular");
         System.out.println("2. Chart");
         int displayChoice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
-        Display display = (displayChoice == 2) ? new ChartDisplay() : new TabularDisplay();
+        display = (displayChoice == 2) ? new ChartDisplay() : new TabularDisplay();
 
-        System.out.println("Results would be displayed here using the selected method.");
+        List<Summary.SummaryResult> results = summary.calculate();
+        display.show(results);
     }
 }
