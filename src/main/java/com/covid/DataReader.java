@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,17 @@ public class DataReader {
             br.readLine(); // Skip header
 
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                Data data = parseData(values);
-                dataList.add(data);
+                try {
+                    String[] values = line.split(",");
+                    if (values.length != 8) {
+                        System.err.println("Skipping invalid line: " + line);
+                        continue;
+                    }
+                    Data data = parseData(values);
+                    dataList.add(data);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                }
             }
         }
 
@@ -30,7 +39,12 @@ public class DataReader {
         String isoCode = values[0];
         String continent = values[1];
         String location = values[2];
-        LocalDate date = LocalDate.parse(values[3], DATE_FORMATTER);
+        LocalDate date;
+        try {
+            date = LocalDate.parse(values[3], DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date format: " + values[3]);
+        }
         int newCases = parseIntOrZero(values[4]);
         int newDeaths = parseIntOrZero(values[5]);
         int peopleVaccinated = parseIntOrZero(values[6]);
