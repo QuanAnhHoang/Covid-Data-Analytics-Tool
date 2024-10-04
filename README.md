@@ -177,6 +177,8 @@ d. Abstraction
 
 ## Personal Contributions
 
+- Worked on error handling and input validation to handle over 1000 data points, while allowing functionality to be extended through the use of interfaces and the Strategy Pattern. 
+- Worked on a dynamic date range filling algorithm to ensure data continuity and a configurable summary calculation system that adapts to metrics and result types.
 
 ***
 
