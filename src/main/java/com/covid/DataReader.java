@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class DataReader {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     public static List<Data> readCSV(String fileName) throws IOException {
-        List<Data> dataList = new ArrayList<>();
+        Map<String, TreeMap<LocalDate, Data>> dataMap = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -26,19 +24,51 @@ public class DataReader {
                         continue;
                     }
                     Data data = parseData(values);
-                    dataList.add(data);
+                    dataMap
+                        .computeIfAbsent(data.getLocation(), k -> new TreeMap<>())
+                        .put(data.getDate(), data);
                 } catch (IllegalArgumentException e) {
                     System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
             }
         }
 
-        // Sort the data by country and date
-        dataList.sort(Comparator
-            .comparing(Data::getLocation)
-            .thenComparing(Data::getDate));
+        return fillMissingDates(dataMap);
+    }
 
-        return dataList;
+    private static List<Data> fillMissingDates(Map<String, TreeMap<LocalDate, Data>> dataMap) {
+        List<Data> filledData = new ArrayList<>();
+
+        for (Map.Entry<String, TreeMap<LocalDate, Data>> entry : dataMap.entrySet()) {
+            String location = entry.getKey();
+            TreeMap<LocalDate, Data> locationData = entry.getValue();
+
+            if (!locationData.isEmpty()) {
+                LocalDate startDate = locationData.firstKey();
+                LocalDate endDate = locationData.lastKey();
+                LocalDate currentDate = startDate;
+
+                while (!currentDate.isAfter(endDate)) {
+                    Data data = locationData.get(currentDate);
+                    if (data == null) {
+                        // Create a new Data object with zero values for missing dates
+                        data = new Data(
+                            locationData.firstEntry().getValue().getIsoCode(),
+                            locationData.firstEntry().getValue().getContinent(),
+                            location,
+                            currentDate,
+                            0, 0, 0,
+                            locationData.firstEntry().getValue().getPopulation()
+                        );
+                    }
+                    filledData.add(data);
+                    currentDate = currentDate.plusDays(1);
+                }
+            }
+        }
+
+        filledData.sort(Comparator.comparing(Data::getLocation).thenComparing(Data::getDate));
+        return filledData;
     }
 
     private static Data parseData(String[] values) {
