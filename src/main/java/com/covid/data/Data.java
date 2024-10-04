@@ -1,3 +1,5 @@
+package com.covid.data;
+
 import java.time.LocalDate;
 
 /**

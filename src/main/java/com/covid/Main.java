@@ -1,3 +1,10 @@
+package com.covid;
+
+import com.covid.data.Data;
+import com.covid.data.DataReader;
+import com.covid.ui.UserInterface;
+
+
 import java.io.IOException;
 import java.util.List;
 

@@ -1,3 +1,7 @@
+package com.covid.display;
+
+import com.covid.summary.Summary;
+
 import java.util.List;
 
 /**

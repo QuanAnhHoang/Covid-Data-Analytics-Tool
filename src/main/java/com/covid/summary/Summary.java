@@ -1,3 +1,8 @@
+package com.covid.summary;
+
+import com.covid.data.Data;
+import com.covid.util.DateRange;
+
 import java.util.ArrayList;
 import java.util.List;
 

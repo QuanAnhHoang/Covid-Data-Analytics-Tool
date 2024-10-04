@@ -1,3 +1,7 @@
+package com.covid.summary;
+
+import com.covid.data.Data;
+
 import java.util.List;
 
 /**
