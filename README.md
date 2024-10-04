@@ -20,7 +20,7 @@ Note: I have not checked the data thoroughly. From what I learn so far, the data
 
 You will use the OOP paradigm to design and develop this project. There are 3 main object hierarchies in this project.
 
-## 1. Data:
+## 1. Data
 
 Each data object has a geographic area, which can be either a country (e.g., Vietnam) or a continent (e.g., Asia), and a time range. The time range can be specified as one of the following:
 
@@ -30,14 +30,14 @@ Each data object has a geographic area, which can be either a country (e.g., Vie
 
 - A number of days or weeks to a particular date (e.g., 1 week to 1/8/2021 means there are 8 days from 1/1/2021 to 1/8/2021)
 
-## 2. Summary:
+## 2. Summary
 
 This is the data after processed and ready to display. To create summary data, original data are grouped (2.1), a metric is chosen (2.2), and a result is calculated (2.3). The possible ways of specifying groupings are (explanation of 2.1):
 
-### a. No grouping:
+### a. No grouping
 Each day is a separate group.
 
-### b. Number of groups:
+### b. Number of groups
 A number is specified, and you must divide your data into that number of groups. You need to divide your data as equally as possible. For example, if your data consist of 10 days (day 1 to day 10) and 3 groups are needed, then you can divide your data into either
 
     [day 1 to day 3], [day 4 to day 6], [day 7 to day 10]
@@ -52,7 +52,7 @@ A number is specified, and you must divide your data into that number of groups.
 
 Note that you can only put consecutive days into a group. In other words, putting day 1, day 2, and day 4 into a group is invalid.
 
-### c. Number of days:
+### c. Number of days
 A number is specified and you divide your data into groups so that each group contains that number of days. For this grouping, if it is not possible to divide groups equally, raise an error telling the caller about that. For example, if your data consist of 10 days (day 1 to day 10) and 5 days per group are needed, you can divide your data into 2 groups. “Number of days” like 3 or 4 are invalid in this case.
 
 After specifying a grouping method, a metric is chosen. There are 3 possible metrics (explanation of 2.2): positive cases, deaths, and people vaccinated.
@@ -65,7 +65,7 @@ Note: the vaccinated column contains the accumulated values up to a date, not ne
 
 Up To: total cases/deaths/vaccinated from the beginning up to the last date of a group
 
-### 3. Display:
+### 3. Display
 
 Summary data is displayed to viewers. There are 2 ways to display data:
 
@@ -110,8 +110,8 @@ Your program should show a menu that lets users choose data (area and range), su
     │   │               │   └── ChartDisplay.java - Implements chart display of results
     │   │               └── util/
     │   │                   └── DateRange.java - Manages date ranges
-    │   └── data/
-    │       └── covid-data.csv
+    └── resources/  
+        └── covid_data.csv
 
 ## Classes and Interfaces
 
