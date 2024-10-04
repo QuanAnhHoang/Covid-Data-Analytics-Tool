@@ -26,6 +26,10 @@ public class Summary {
         int runningTotal = 0;
 
         for (List<Data> group : groupedData) {
+            if (group.isEmpty()) {
+                continue; // Skip empty groups
+            }
+
             int groupTotal = calculateGroupTotal(group);
             runningTotal += groupTotal;
 
@@ -43,13 +47,18 @@ public class Summary {
 
     private int calculateGroupTotal(List<Data> group) {
         return group.stream().mapToInt(data -> {
+            if (data == null) {
+                return 0; // Handle null data points
+            }
             switch (metric) {
                 case POSITIVE_CASES:
                     return data.getNewCases();
                 case DEATHS:
                     return data.getNewDeaths();
                 case PEOPLE_VACCINATED:
-                    return data.getPeopleVaccinated();
+                    int currentVaccinated = data.getPeopleVaccinated();
+                    int previousVaccinated = group.indexOf(data) > 0 ? group.get(group.indexOf(data) - 1).getPeopleVaccinated() : 0;
+                    return currentVaccinated - previousVaccinated;
                 default:
                     throw new IllegalStateException("Unexpected metric: " + metric);
             }
@@ -96,7 +105,7 @@ public class Summary {
             int start = 0;
             for (int i = 0; i < numberOfGroups; i++) {
                 int groupSize = baseSize + (i < remainder ? 1 : 0);
-                groups.add(new ArrayList<>(data.subList(start, start + groupSize)));
+                groups.add(new ArrayList<>(data.subList(start, Math.min(start + groupSize, size))));
                 start += groupSize;
             }
 
@@ -116,15 +125,10 @@ public class Summary {
 
         @Override
         public List<List<Data>> group(List<Data> data) {
-            if (data.size() % daysPerGroup != 0) {
-                throw new IllegalArgumentException("Data size is not divisible by the number of days per group");
-            }
-
             List<List<Data>> groups = new ArrayList<>();
             for (int i = 0; i < data.size(); i += daysPerGroup) {
-                groups.add(new ArrayList<>(data.subList(i, i + daysPerGroup)));
+                groups.add(new ArrayList<>(data.subList(i, Math.min(i + daysPerGroup, data.size()))));
             }
-
             return groups;
         }
     }
