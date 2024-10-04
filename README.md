@@ -89,10 +89,94 @@ Your program should show a menu that lets users choose data (area and range), su
 
 ## Project Structure
 
-## Classes and Inheritance
+    Covid-Data-Analytics-Tool/
+    ├── src/
+    │   ├── main/
+    │   │   └── java/
+    │   │       └── com/
+    │   │           └── covid/  
+    │   │               ├── Main.java - Entry point of the application
+    │   │               ├── ui/
+    │   │               │   └── UserInterface.java - Handles user interactions
+    │   │               ├── data/
+    │   │               │   ├── Data.java - Represents individual data points
+    │   │               │   └── DataReader.java - Reads and parses CSV data
+    │   │               ├── summary/
+    │   │               │   ├── Summary.java - Processes and summarizes data
+    │   │               │   └── GroupingStrategy.java - Interface for data grouping strategies
+    │   │               ├── display/
+    │   │               │   ├── Display.java - Interface for result display methods
+    │   │               │   ├── TabularDisplay.java - Implements tabular display of results
+    │   │               │   └── ChartDisplay.java - Implements chart display of results
+    │   │               └── util/
+    │   │                   └── DateRange.java - Manages date ranges
+    │   └── data/
+    │       └── covid-data.csv
 
+## Classes and Interfaces
+
+### a. Main
+- Main class: Entry point of the application
+- Methods: main()
+
+### b. Data
+- Represents a single data point
+- Attributes: isoCode, continent, location, date, newCases, newDeaths, peopleVaccinated, population
+- Methods: Getters for all attributes, toString()
+
+### c. DateRange
+- Represents a range of dates
+- Attributes: startDate, endDate
+- Methods: Getters, getDays(), toString()
+
+### d. DataReader
+- Static utility class for reading CSV data
+- Methods: readCSV(), fillMissingDates(), parseData(), parseIntOrZero(), parseLongOrZero()
+
+### e. GroupingStrategy (Interface)
+- Defines the contract for grouping data
+- Methods: group(List<Data>)
+
+### f. Summary
+- Handles data summarization
+- Nested classes: SummaryResult, NoGrouping, NumberOfGroups, NumberOfDays (all implement GroupingStrategy)
+- Enums: Metric, ResultType
+- Methods: calculate(), calculateGroupTotal()
+
+### g. Display (Interface)
+- Defines the contract for displaying results
+- Methods: show(List<Summary.SummaryResult>)
+
+### h. TabularDisplay
+- Implements Display for tabular output
+- Methods: show()
+
+### i. ChartDisplay
+- Implements Display for chart output
+- Methods: show(), initializeChart(), printChart(), printLegend()
+
+### j. UserInterface
+- Handles user interaction
+- Methods: run(), selectData(), chooseSummaryOptions(), displayResults(), various helper methods
+
+## OOP Principles Applied
+
+a. Encapsulation
+- Private attributes with public getters in Data, DateRange, Summary.SummaryResult
+- Package-private methods in DataReader for internal use
+
+b. Inheritance
+- TabularDisplay and ChartDisplay inherit from Display interface
+- NoGrouping, NumberOfGroups, NumberOfDays inherit from GroupingStrategy interface
+
+c. Polymorphism
+- Use of GroupingStrategy and Display interfaces allows for runtime polymorphism
+
+d. Abstraction
+- GroupingStrategy and Display interfaces provide abstraction for grouping and display logic
 
 ## Personal Contributions
+
 
 ***
 
