@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class DataReader {
@@ -31,6 +32,11 @@ public class DataReader {
                 }
             }
         }
+
+        // Sort the data by country and date
+        dataList.sort(Comparator
+            .comparing(Data::getLocation)
+            .thenComparing(Data::getDate));
 
         return dataList;
     }
