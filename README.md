@@ -110,7 +110,7 @@ Your program should show a menu that lets users choose data (area and range), su
     │   │               │   └── ChartDisplay.java - Implements chart display of results
     │   │               └── util/
     │   │                   └── DateRange.java - Manages date ranges
-    └── resources/  
+    └── data/  
         └── covid_data.csv
 
 ## Classes and Interfaces
