@@ -1,0 +1,14 @@
+import java.io.IOException;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            List<Data> allData = DataReader.readCSV("covid_data.csv");
+            UserInterface ui = new UserInterface(allData);
+            ui.run();
+        } catch (IOException e) {
+            System.err.println("Error reading CSV file: " + e.getMessage());
+        }
+    }
+}
