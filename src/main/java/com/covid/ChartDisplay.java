@@ -6,6 +6,11 @@ public class ChartDisplay implements Display {
 
     @Override
     public void show(List<Summary.SummaryResult> results) {
+        if (results == null || results.isEmpty()) {
+            System.out.println("No results to display.");
+            return;
+        }
+
         int maxValue = results.stream().mapToInt(Summary.SummaryResult::getValue).max().orElse(0);
         char[][] chart = new char[CHART_HEIGHT][CHART_WIDTH];
         initializeChart(chart);
@@ -18,6 +23,7 @@ public class ChartDisplay implements Display {
         }
 
         printChart(chart);
+        printLegend(results);
     }
 
     private void initializeChart(char[][] chart) {
@@ -37,6 +43,14 @@ public class ChartDisplay implements Display {
     private void printChart(char[][] chart) {
         for (char[] row : chart) {
             System.out.println(new String(row));
+        }
+    }
+
+    private void printLegend(List<Summary.SummaryResult> results) {
+        System.out.println("\nLegend:");
+        for (int i = 0; i < results.size(); i++) {
+            Summary.SummaryResult result = results.get(i);
+            System.out.printf("%d: %s (%d)%n", i + 1, result.getDateRange(), result.getValue());
         }
     }
 }
