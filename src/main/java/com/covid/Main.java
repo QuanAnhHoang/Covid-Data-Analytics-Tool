@@ -4,7 +4,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         try {
-            List<Data> allData = DataReader.readCSV("covid_data.csv");
+            List<Data> allData = DataReader.readCSV("data/covid-data.csv");
             if (allData.isEmpty()) {
                 System.err.println("No data was read from the CSV file. Exiting.");
                 return;
