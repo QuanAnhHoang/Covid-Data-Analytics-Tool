@@ -4,41 +4,57 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The `UserInterface` class handles user interaction for the COVID-19 data analysis application.
+ * It allows users to select data, choose summary options, and display results.
+ */
 public class UserInterface {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
-    private Scanner scanner;
-    private List<Data> allData;
-    private List<Data> selectedData;
-    private Summary summary;
-    private Display display;
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy"); // Date formatter for user input
+    private Scanner scanner; // Scanner for user input
+    private List<Data> allData; // All data read from the CSV file
+    private List<Data> selectedData; // Data selected by the user based on location and date range
+    private Summary summary; // Summary object for calculating summary statistics
+    private Display display; // Display object for displaying the results
+
+
+    /**
+     * Constructor for the UserInterface.
+     * @param allData The complete list of COVID-19 data.
+     */
     public UserInterface(List<Data> allData) {
         this.scanner = new Scanner(System.in);
         this.allData = allData;
     }
 
+    /**
+     * Runs the main user interface loop.  Presents the menu, gets user input, and performs actions.
+     */
     public void run() {
         while (true) {
             displayMenu();
             int choice = getValidIntInput(1, 4);
-            
+
             switch (choice) {
                 case 1:
-                    selectData();
+                    selectData(); // Select data based on location and date range
                     break;
                 case 2:
-                    chooseSummaryOptions();
+                    chooseSummaryOptions(); // Choose summary options (grouping, metric, result type)
                     break;
                 case 3:
-                    displayResults();
+                    displayResults(); // Display the calculated summary results
                     break;
                 case 4:
                     System.out.println("Exiting program. Goodbye!");
-                    return;
+                    return; // Exit the program
             }
         }
     }
 
+    /**
+     * Displays the main menu options to the user.
+     */
     private void displayMenu() {
         System.out.println("\nCOVID-19 Data Analysis");
         System.out.println("1. Select Data");
@@ -47,6 +63,13 @@ public class UserInterface {
         System.out.println("4. Exit");
     }
 
+
+    /**
+     * Gets valid integer input from the user within a specified range.
+     * @param min The minimum acceptable value.
+     * @param max The maximum acceptable value.
+     * @return The valid integer input from the user.
+     */
     private int getValidIntInput(int min, int max) {
         while (true) {
             System.out.print("Enter your choice (" + min + "-" + max + "): ");
