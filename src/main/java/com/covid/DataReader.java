@@ -16,11 +16,13 @@ public class DataReader {
             String line;
             br.readLine(); // Skip header
 
+            int lineNumber = 1;
             while ((line = br.readLine()) != null) {
+                lineNumber++;
                 try {
                     String[] values = line.split(",");
                     if (values.length != 8) {
-                        System.err.println("Skipping invalid line: " + line);
+                        System.err.println("Skipping invalid line " + lineNumber + ": " + line);
                         continue;
                     }
                     Data data = parseData(values);
@@ -28,12 +30,18 @@ public class DataReader {
                         .computeIfAbsent(data.getLocation(), k -> new TreeMap<>())
                         .put(data.getDate(), data);
                 } catch (IllegalArgumentException e) {
-                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                    System.err.println("Error parsing line " + lineNumber + ": " + line + ". " + e.getMessage());
                 }
             }
         }
 
-        return fillMissingDates(dataMap);
+        List<Data> filledData = fillMissingDates(dataMap);
+        
+        if (filledData.isEmpty()) {
+            throw new IOException("No valid data was read from the CSV file.");
+        }
+
+        return filledData;
     }
 
     private static List<Data> fillMissingDates(Map<String, TreeMap<LocalDate, Data>> dataMap) {
@@ -48,18 +56,23 @@ public class DataReader {
                 LocalDate endDate = locationData.lastKey();
                 LocalDate currentDate = startDate;
 
+                Data firstEntry = locationData.firstEntry().getValue();
+                long lastPopulation = firstEntry.getPopulation();
+
                 while (!currentDate.isAfter(endDate)) {
                     Data data = locationData.get(currentDate);
                     if (data == null) {
                         // Create a new Data object with zero values for missing dates
                         data = new Data(
-                            locationData.firstEntry().getValue().getIsoCode(),
-                            locationData.firstEntry().getValue().getContinent(),
+                            firstEntry.getIsoCode(),
+                            firstEntry.getContinent(),
                             location,
                             currentDate,
                             0, 0, 0,
-                            locationData.firstEntry().getValue().getPopulation()
+                            lastPopulation
                         );
+                    } else {
+                        lastPopulation = data.getPopulation(); // Update last known population
                     }
                     filledData.add(data);
                     currentDate = currentDate.plusDays(1);
@@ -72,6 +85,10 @@ public class DataReader {
     }
 
     private static Data parseData(String[] values) {
+        if (values.length != 8) {
+            throw new IllegalArgumentException("Invalid number of fields. Expected 8, got " + values.length);
+        }
+
         String isoCode = values[0];
         String continent = values[1];
         String location = values[2];
@@ -90,16 +107,22 @@ public class DataReader {
     }
 
     private static int parseIntOrZero(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
         try {
-            return Integer.parseInt(value);
+            return Integer.parseInt(value.trim());
         } catch (NumberFormatException e) {
             return 0;
         }
     }
 
     private static long parseLongOrZero(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
         try {
-            return Long.parseLong(value);
+            return Long.parseLong(value.trim());
         } catch (NumberFormatException e) {
             return 0;
         }
