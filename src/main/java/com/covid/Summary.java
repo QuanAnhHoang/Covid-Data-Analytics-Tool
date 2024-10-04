@@ -5,11 +5,17 @@ public class Summary {
     public enum Metric { POSITIVE_CASES, DEATHS, PEOPLE_VACCINATED }
     public enum ResultType { NEW_TOTAL, UP_TO }
 
-    private List<List<Data>> groupedData;
-    private Metric metric;
-    private ResultType resultType;
+    private final List<List<Data>> groupedData;
+    private final Metric metric;
+    private final ResultType resultType;
 
     public Summary(List<Data> data, GroupingStrategy groupingStrategy, Metric metric, ResultType resultType) {
+        if (data == null || data.isEmpty()) {
+            throw new IllegalArgumentException("Data list must not be null or empty");
+        }
+        if (groupingStrategy == null || metric == null || resultType == null) {
+            throw new IllegalArgumentException("Grouping strategy, metric, and result type must not be null");
+        }
         this.groupedData = groupingStrategy.group(data);
         this.metric = metric;
         this.resultType = resultType;
@@ -45,14 +51,14 @@ public class Summary {
                 case PEOPLE_VACCINATED:
                     return data.getPeopleVaccinated();
                 default:
-                    return 0;
+                    throw new IllegalStateException("Unexpected metric: " + metric);
             }
         }).sum();
     }
 
     public static class SummaryResult {
-        private DateRange dateRange;
-        private int value;
+        private final DateRange dateRange;
+        private final int value;
 
         public SummaryResult(DateRange dateRange, int value) {
             this.dateRange = dateRange;
@@ -63,7 +69,6 @@ public class Summary {
         public int getValue() { return value; }
     }
 
-    // Grouping strategy implementations
     public static class NoGrouping implements GroupingStrategy {
         @Override
         public List<List<Data>> group(List<Data> data) {
@@ -72,9 +77,12 @@ public class Summary {
     }
 
     public static class NumberOfGroups implements GroupingStrategy {
-        private int numberOfGroups;
+        private final int numberOfGroups;
 
         public NumberOfGroups(int numberOfGroups) {
+            if (numberOfGroups <= 0) {
+                throw new IllegalArgumentException("Number of groups must be positive");
+            }
             this.numberOfGroups = numberOfGroups;
         }
 
@@ -97,9 +105,12 @@ public class Summary {
     }
 
     public static class NumberOfDays implements GroupingStrategy {
-        private int daysPerGroup;
+        private final int daysPerGroup;
 
         public NumberOfDays(int daysPerGroup) {
+            if (daysPerGroup <= 0) {
+                throw new IllegalArgumentException("Days per group must be positive");
+            }
             this.daysPerGroup = daysPerGroup;
         }
 
