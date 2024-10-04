@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,16 +19,9 @@ public class UserInterface {
 
     public void run() {
         while (true) {
-            System.out.println("\nCOVID-19 Data Analysis");
-            System.out.println("1. Select Data");
-            System.out.println("2. Choose Summary Options");
-            System.out.println("3. Display Results");
-            System.out.println("4. Exit");
-            System.out.print("Enter your choice: ");
-
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
+            displayMenu();
+            int choice = getValidIntInput(1, 4);
+            
             switch (choice) {
                 case 1:
                     selectData();
@@ -41,32 +35,71 @@ public class UserInterface {
                 case 4:
                     System.out.println("Exiting program. Goodbye!");
                     return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private void displayMenu() {
+        System.out.println("\nCOVID-19 Data Analysis");
+        System.out.println("1. Select Data");
+        System.out.println("2. Choose Summary Options");
+        System.out.println("3. Display Results");
+        System.out.println("4. Exit");
+    }
+
+    private int getValidIntInput(int min, int max) {
+        while (true) {
+            System.out.print("Enter your choice (" + min + "-" + max + "): ");
+            try {
+                int choice = Integer.parseInt(scanner.nextLine().trim());
+                if (choice >= min && choice <= max) {
+                    return choice;
+                } else {
+                    System.out.println("Invalid input. Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
             }
         }
     }
 
     private void selectData() {
         System.out.print("Enter location (country or continent): ");
-        String location = scanner.nextLine();
+        String location = scanner.nextLine().trim();
 
-        System.out.print("Enter start date (M/d/yyyy): ");
-        LocalDate startDate = LocalDate.parse(scanner.nextLine(), DATE_FORMATTER);
+        LocalDate startDate = getValidDate("Enter start date (M/d/yyyy): ");
+        LocalDate endDate = getValidDate("Enter end date (M/d/yyyy): ");
 
-        System.out.print("Enter end date (M/d/yyyy): ");
-        LocalDate endDate = LocalDate.parse(scanner.nextLine(), DATE_FORMATTER);
+        if (endDate.isBefore(startDate)) {
+            System.out.println("End date cannot be before start date. Please try again.");
+            return;
+        }
 
         DateRange dateRange = new DateRange(startDate, endDate);
 
-        // Filter data based on location and date range
         selectedData = allData.stream()
                 .filter(d -> (d.getLocation().equalsIgnoreCase(location) || d.getContinent().equalsIgnoreCase(location))
                         && !d.getDate().isBefore(dateRange.getStartDate())
                         && !d.getDate().isAfter(dateRange.getEndDate()))
                 .toList();
 
-        System.out.println("Data selected: " + selectedData.size() + " records");
+        if (selectedData.isEmpty()) {
+            System.out.println("No data found for the specified location and date range.");
+        } else {
+            System.out.println("Data selected: " + selectedData.size() + " records");
+        }
+    }
+
+    private LocalDate getValidDate(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return LocalDate.parse(input, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please use M/d/yyyy format.");
+            }
+        }
     }
 
     private void chooseSummaryOptions() {
@@ -75,69 +108,67 @@ public class UserInterface {
             return;
         }
 
+        GroupingStrategy groupingStrategy = chooseGroupingStrategy();
+        Summary.Metric metric = chooseMetric();
+        Summary.ResultType resultType = chooseResultType();
+
+        try {
+            summary = new Summary(selectedData, groupingStrategy, metric, resultType);
+            System.out.println("Summary options selected and applied.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error creating summary: " + e.getMessage());
+        }
+    }
+
+    private GroupingStrategy chooseGroupingStrategy() {
         System.out.println("Choose grouping method:");
         System.out.println("1. No grouping");
         System.out.println("2. Number of groups");
         System.out.println("3. Number of days per group");
-        int groupingChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        int groupingChoice = getValidIntInput(1, 3);
 
-        GroupingStrategy groupingStrategy;
         switch (groupingChoice) {
             case 1:
-                groupingStrategy = new Summary.NoGrouping();
-                break;
+                return new Summary.NoGrouping();
             case 2:
                 System.out.print("Enter number of groups: ");
-                int numberOfGroups = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-                groupingStrategy = new Summary.NumberOfGroups(numberOfGroups);
-                break;
+                int numberOfGroups = getValidIntInput(1, selectedData.size());
+                return new Summary.NumberOfGroups(numberOfGroups);
             case 3:
                 System.out.print("Enter number of days per group: ");
-                int daysPerGroup = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-                groupingStrategy = new Summary.NumberOfDays(daysPerGroup);
-                break;
+                int daysPerGroup = getValidIntInput(1, selectedData.size());
+                return new Summary.NumberOfDays(daysPerGroup);
             default:
-                System.out.println("Invalid choice. Using no grouping.");
-                groupingStrategy = new Summary.NoGrouping();
+                throw new IllegalStateException("Unexpected value: " + groupingChoice);
         }
+    }
 
+    private Summary.Metric chooseMetric() {
         System.out.println("Choose metric:");
         System.out.println("1. Positive cases");
         System.out.println("2. Deaths");
         System.out.println("3. People vaccinated");
-        int metricChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        int metricChoice = getValidIntInput(1, 3);
 
-        Summary.Metric metric;
         switch (metricChoice) {
             case 1:
-                metric = Summary.Metric.POSITIVE_CASES;
-                break;
+                return Summary.Metric.POSITIVE_CASES;
             case 2:
-                metric = Summary.Metric.DEATHS;
-                break;
+                return Summary.Metric.DEATHS;
             case 3:
-                metric = Summary.Metric.PEOPLE_VACCINATED;
-                break;
+                return Summary.Metric.PEOPLE_VACCINATED;
             default:
-                System.out.println("Invalid choice. Using positive cases.");
-                metric = Summary.Metric.POSITIVE_CASES;
+                throw new IllegalStateException("Unexpected value: " + metricChoice);
         }
+    }
 
+    private Summary.ResultType chooseResultType() {
         System.out.println("Choose result type:");
         System.out.println("1. New Total");
         System.out.println("2. Up To");
-        int resultTypeChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        int resultTypeChoice = getValidIntInput(1, 2);
 
-        Summary.ResultType resultType = (resultTypeChoice == 2) ? Summary.ResultType.UP_TO : Summary.ResultType.NEW_TOTAL;
-
-        // Create Summary object with chosen options
-        summary = new Summary(selectedData, groupingStrategy, metric, resultType);
-        System.out.println("Summary options selected and applied.");
+        return (resultTypeChoice == 2) ? Summary.ResultType.UP_TO : Summary.ResultType.NEW_TOTAL;
     }
 
     private void displayResults() {
@@ -149,12 +180,15 @@ public class UserInterface {
         System.out.println("Choose display method:");
         System.out.println("1. Tabular");
         System.out.println("2. Chart");
-        int displayChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        int displayChoice = getValidIntInput(1, 2);
 
         display = (displayChoice == 2) ? new ChartDisplay() : new TabularDisplay();
 
         List<Summary.SummaryResult> results = summary.calculate();
-        display.show(results);
+        if (results.isEmpty()) {
+            System.out.println("No results to display.");
+        } else {
+            display.show(results);
+        }
     }
 }
