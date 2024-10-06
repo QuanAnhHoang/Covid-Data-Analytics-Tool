@@ -20,7 +20,7 @@ Note: I have not checked the data thoroughly. From what I learn so far, the data
 
 You will use the OOP paradigm to design and develop this project. There are 3 main object hierarchies in this project.
 
-## 1. Data
+## Data
 
 Each data object has a geographic area, which can be either a country (e.g., Vietnam) or a continent (e.g., Asia), and a time range. The time range can be specified as one of the following:
 
@@ -30,7 +30,7 @@ Each data object has a geographic area, which can be either a country (e.g., Vie
 
 - A number of days or weeks to a particular date (e.g., 1 week to 1/8/2021 means there are 8 days from 1/1/2021 to 1/8/2021)
 
-## 2. Summary
+## Summary
 
 This is the data after processed and ready to display. To create summary data, original data are grouped (2.1), a metric is chosen (2.2), and a result is calculated (2.3). The possible ways of specifying groupings are (explanation of 2.1):
 
@@ -65,7 +65,7 @@ Note: the vaccinated column contains the accumulated values up to a date, not ne
 
 Up To: total cases/deaths/vaccinated from the beginning up to the last date of a group
 
-### 3. Display
+### Display
 
 Summary data is displayed to viewers. There are 2 ways to display data:
 
@@ -111,7 +111,7 @@ Your program should show a menu that lets users choose data (area and range), su
     │   │               └── util/
     │   │                   └── DateRange.java - Manages date ranges
     └── data/  
-        └── covid_data.csv
+        └── covid-data.csv
 
 ## Classes and Interfaces
 
