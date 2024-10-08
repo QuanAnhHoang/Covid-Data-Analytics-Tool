@@ -3,13 +3,6 @@
 
 ***
 
-# Assessment Details
-
-In this assignment, you are asked to implement a text-based program using Java language and OOP techniques. The details of the assignment will be released around week 4. There are 3 main parts:
-
-- OOP design and implementation: you need to design and implement a class hierarchy to make your program flexible and easy to maintain
-- Problem-solving tasks: you need to apply control statements, algorithms, data structures, etc. to solve particular tasks
-
 # Problem Details
 
 The COVID-19 pandemic is becoming worse over time. Although not having a firm background in medicine and health, you want to contribute to the community in fighting this battle. By reading science articles, you know that health decision-makers need to process a lot of data to make informed and insightful decisions. Possessing several RMIT programming–related courses’ HD under your belt (even though your lecturer deliberately limits the number of HDs to just around 10%), you know that you can create an intensive data processing and analytics tool that may be beneficial to policymakers.
@@ -115,65 +108,18 @@ Your program should show a menu that lets users choose data (area and range), su
 
 ## Classes and Interfaces
 
-### a. Main
-- Main class: Entry point of the application
-- Methods: main()
-
-### b. Data
-- Represents a single data point
-- Attributes: isoCode, continent, location, date, newCases, newDeaths, peopleVaccinated, population
-- Methods: Getters for all attributes, toString()
-
-### c. DateRange
-- Represents a range of dates
-- Attributes: startDate, endDate
-- Methods: Getters, getDays(), toString()
-
-### d. DataReader
-- Static utility class for reading CSV data
-- Methods: readCSV(), fillMissingDates(), parseData(), parseIntOrZero(), parseLongOrZero()
-
-### e. GroupingStrategy (Interface)
-- Defines the contract for grouping data
-- Methods: group(List<Data>)
-
-### f. Summary
-- Handles data summarization
-- Nested classes: SummaryResult, NoGrouping, NumberOfGroups, NumberOfDays (all implement GroupingStrategy)
-- Enums: Metric, ResultType
-- Methods: calculate(), calculateGroupTotal()
-
-### g. Display (Interface)
-- Defines the contract for displaying results
-- Methods: show(List<Summary.SummaryResult>)
-
-### h. TabularDisplay
-- Implements Display for tabular output
-- Methods: show()
-
-### i. ChartDisplay
-- Implements Display for chart output
-- Methods: show(), initializeChart(), printChart(), printLegend()
-
-### j. UserInterface
-- Handles user interaction
-- Methods: run(), selectData(), chooseSummaryOptions(), displayResults(), various helper methods
-
-## OOP Principles Applied
-
-a. Encapsulation
-- Private attributes with public getters in Data, DateRange, Summary.SummaryResult
-- Package-private methods in DataReader for internal use
-
-b. Inheritance
-- TabularDisplay and ChartDisplay inherit from Display interface
-- NoGrouping, NumberOfGroups, NumberOfDays inherit from GroupingStrategy interface
-
-c. Polymorphism
-- Use of GroupingStrategy and Display interfaces allows for runtime polymorphism
-
-d. Abstraction
-- GroupingStrategy and Display interfaces provide abstraction for grouping and display logic
+| Class/Interface | Description                                      | Attributes/Methods                                                                                                                                               |
+|-----------------|--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Main`         | Entry point of the application                   | Methods: `main()`                                                                                                                                                 |
+| `Data`         | Represents a single data point                 | Attributes: `isoCode`, `continent`, `location`, `date`, `newCases`, `newDeaths`, `peopleVaccinated`, `population`<br>Methods: Getters for all attributes, `toString()` |
+| `DateRange`    | Represents a range of dates                   | Attributes: `startDate`, `endDate`<br>Methods: Getters, `getDays()`, `toString()`                                                                                 |
+| `DataReader`   | Static utility class for reading CSV data      | Methods: `readCSV()`, `fillMissingDates()`, `parseData()`, `parseIntOrZero()`, `parseLongOrZero()`                                                                |
+| `GroupingStrategy` | Defines the contract for grouping data        | Methods: `group(List)`                                                                                                                                           |
+| `Summary`      | Handles data summarization                      | Nested Classes: `SummaryResult`, `NoGrouping`, `NumberOfGroups`, `NumberOfDays` (all implement `GroupingStrategy`)<br>Enums: `Metric`, `ResultType`<br>Methods: `calculate()`, `calculateGroupTotal()` |
+| `Display`      | Defines the contract for displaying results     | Methods: `show(List<Summary.SummaryResult>)`                                                                                                                      |
+| `TabularDisplay` | Implements `Display` for tabular output       | Methods: `show()`                                                                                                                                                 |
+| `ChartDisplay`  | Implements `Display` for chart output         | Methods: `show()`, `initializeChart()`, `printChart()`, `printLegend()`                                                                                          |
+| `UserInterface` | Handles user interaction                       | Methods: `run()`, `selectData()`, `chooseSummaryOptions()`, `displayResults()`, various helper methods                                                              |
 
 ## Personal Contributions
 
