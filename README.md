@@ -123,8 +123,17 @@ Your program should show a menu that lets users choose data (area and range), su
 
 ## Personal Contributions
 
-- Worked on error handling and input validation to handle over 1000 data points, while allowing functionality to be extended through the use of interfaces and the Strategy Pattern. 
-- Worked on a dynamic date range filling algorithm to ensure data continuity and a configurable summary calculation system that adapts to metrics and result types.
+### 1. Worked on error handling and input validation to handle over 1000 data points
+- In the Main class, added try-catch blocks to handle IOExceptions and unexpected exceptions.
+- In the DataReader class, implemented error checking when parsing CSV data, including line-by-line validation and skipping of invalid entries.
+- In the Data class constructor, added input validation to ensure that no null values or negative numbers are accepted.
+- In the UserInterface class, implemented methods like getValidIntInput and getValidDate to ensure user inputs are valid and within expected ranges.
+
+### 2. Worked on a dynamic date range filling algorithm to ensure data continuity and a configurable summary calculation system that adapts to metrics and result types
+- The fillMissingDates method ensures data continuity by creating Data objects with default values for any missing dates within a location's date range.
+- This algorithm handles gaps in the data, ensuring that analysis can be performed on continuous date ranges even if the original data had missing dates.
+- The system adapts to different metrics (POSITIVE_CASES, DEATHS, PEOPLE_VACCINATED) and result types (NEW_TOTAL, UP_TO).
+- The calculate method in the Summary class dynamically computes results based on the chosen metric and result type.
 
 ***
 
